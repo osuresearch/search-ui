@@ -1,0 +1,39 @@
+name: Dev
+on:
+  push:
+    branches:
+      - dev
+jobs:
+  dev:
+    name: Dev
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          cache: yarn
+          node-version: 16
+          cache-dependency-path: yarn.lock
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build dev
+        run: yarn build
+
+      - name: Build Storybook
+        run: yarn build:storybook
+
+      - name: Deploy GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: gh-pages
+          folder: docs-build
+          target-folder: dev
+          clean: true
